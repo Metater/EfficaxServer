@@ -9,11 +9,11 @@ namespace EfficaxServer
 {
     public abstract class PacketHandler
     {
-        protected ServerPacketRouter serverPacketRouter;
+        protected ServerInteractor serverInteractor;
 
-        public void InitBase(ServerPacketRouter serverPacketRouter)
+        public void InitBase(ServerInteractor serverInteractor)
         {
-            this.serverPacketRouter = serverPacketRouter;
+            this.serverInteractor = serverInteractor;
         }
 
         public abstract void Handle(NetPeer peer, DataReader dataReader);

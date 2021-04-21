@@ -14,12 +14,12 @@ namespace EfficaxServer.PacketHandlers.Player
         {
             // Later give a server-registered session id, and clean this code up, it smells
             PlayerSelfUpdatePacket playerSelfUpdatePacket = new PlayerSelfUpdatePacket(dataReader);
-            foreach (KeyValuePair<(int, NetPeer), PositionData> playerPositionKVP in serverPacketRouter.playerPositions)
+            foreach (KeyValuePair<(int, NetPeer), PositionData> playerPositionKVP in serverInteractor.playerPositions)
             {
                 if (playerPositionKVP.Key.Item2 == peer)
                 {
                     PlayerUpdatePacket playerUpdatePacket = new PlayerUpdatePacket(playerPositionKVP.Key.Item1, playerSelfUpdatePacket.playerPos);
-                    serverPacketRouter.networkInteractor.BroadcastBut(peer.Id, playerUpdatePacket.ToPacket(), DeliveryMethod.Unreliable);
+                    serverInteractor.networkInteractor.BroadcastBut(peer.Id, playerUpdatePacket.ToPacket(), DeliveryMethod.Unreliable);
                 }
             }
         }

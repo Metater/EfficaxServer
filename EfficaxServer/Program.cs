@@ -6,6 +6,7 @@ using LiteNetLib.Utils;
 using EfficaxData;
 using EfficaxData.Packets;
 using EfficaxData.Packets.Player;
+using System.Diagnostics;
 
 namespace EfficaxServer
 {
@@ -13,15 +14,19 @@ namespace EfficaxServer
     {
         static void Main(string[] args)
         {
+            ServerInteractor serverInteractor = new ServerInteractor();
+
+            ServerPacketRouter packetRouter = new ServerPacketRouter(serverInteractor);
             ServerNetworkInteractor networkInteractor = new ServerNetworkInteractor();
+            PeerPlayerIdMap peerPlayerIdMap = new PeerPlayerIdMap();
+            Dictionary<(int, NetPeer), PositionData> playerPositions = new Dictionary<(int, NetPeer), PositionData>();
+
 
             networkInteractor.server.Start(25566 /* port */);
 
-            Dictionary<(int, NetPeer), PositionData> playerPositions = new Dictionary<(int, NetPeer), PositionData>();
-
             Dictionary<NetPeer, string> playerNames = new Dictionary<NetPeer, string>();
 
-            ServerPacketRouter packetRouter = new ServerPacketRouter(networkInteractor, playerPositions);
+            serverInteractor.Load(packetRouter, networkInteractor, peerPlayerIdMap, playerPositions);
 
             Random playerIdMaker = new Random();
 
@@ -65,25 +70,57 @@ namespace EfficaxServer
 
             networkInteractor.listener.NetworkReceiveEvent += (fromPeer, dataReader, deliveryMethod) =>
             {
-                Console.WriteLine("Received, ID: " + fromPeer.Id);
+                //Console.WriteLine("Received, ID: " + fromPeer.Id);
                 packetRouter.Route(fromPeer, dataReader);
                 dataReader.Recycle();
             };
 
+
+            var t = new Stopwatch();
+            t.Start();
+
+            var lastTick = new Stopwatch();
+            lastTick.Start();
+            long timePerTick = 50;
+            long timerTicks = 0;
+            long timerTicksReset = 0;
+
+            int ticks = 0;
+
+            var workTimer = new Timer((x) => {
+                Console.WriteLine(ticks);
+                ticks = 0;
+            }, null, 0, 1000);
+
             while (!Console.KeyAvailable)
             {
-                for (int i = 0; i < 5; i++)
+                networkInteractor.server.PollEvents();
+                timerTicks += lastTick.ElapsedMilliseconds;
+                if (timerTicks >= timePerTick)
                 {
-                    networkInteractor.server.PollEvents();
-                    Thread.Sleep(8);
+                    timerTicks = timerTicksReset;
+                    Tick();
+                    lastTick.Restart();
                 }
-                Tick();
+                Thread.Sleep(1);
             }
             networkInteractor.server.Stop();
 
+            void TryTick()
+            {
+                lastTick.Stop();
+                if (lastTick.ElapsedTicks > 50)
+                {
+                    lastTick.Restart();
+                    Tick();
+                }
+            }
+
             void Tick()
             {
-
+                //Console.WriteLine("Tick: " + t.ElapsedMilliseconds + ":::" + t.ElapsedTicks);
+                t.Restart();
+                ticks++;
             }
         }
     }

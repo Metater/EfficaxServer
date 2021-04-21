@@ -16,23 +16,21 @@ namespace EfficaxServer
 {
     public class ServerPacketRouter
     {
-        public ServerNetworkInteractor networkInteractor;
-        public Dictionary<(int, NetPeer), PositionData> playerPositions;
+        public ServerInteractor serverInteractor;
 
         private ChatSendPacketHandler chatSendPacketHandler = new ChatSendPacketHandler();
         private PlayerSelfUpdatePacketHandler playerSelfUpdatePacketHandler = new PlayerSelfUpdatePacketHandler();
 
-        public ServerPacketRouter(ServerNetworkInteractor networkInteractor, Dictionary<(int, NetPeer), PositionData> playerPositions)
+        public ServerPacketRouter(ServerInteractor serverInteractor)
         {
-            this.networkInteractor = networkInteractor;
-            this.playerPositions = playerPositions;
+            this.serverInteractor = serverInteractor;
             Init();
         }
 
         private void Init()
         {
-            chatSendPacketHandler.InitBase(this);
-            playerSelfUpdatePacketHandler.InitBase(this);
+            chatSendPacketHandler.InitBase(serverInteractor);
+            playerSelfUpdatePacketHandler.InitBase(serverInteractor);
         }
 
         public void Route(NetPeer peer, NetDataReader netDataReader)

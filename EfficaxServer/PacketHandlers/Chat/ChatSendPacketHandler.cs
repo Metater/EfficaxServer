@@ -13,7 +13,7 @@ namespace EfficaxServer.PacketHandlers.Chat
         {
             ChatSendPacket chatSendPacket = new ChatSendPacket(dataReader);
             ChatReceivePacket chatReceivePacket = new ChatReceivePacket(chatSendPacket.message);
-            serverPacketRouter.networkInteractor.BroadcastBut(peer.Id, chatReceivePacket.ToPacket(), DeliveryMethod.ReliableOrdered);
+            serverInteractor.networkInteractor.BroadcastBut(peer.Id, chatReceivePacket.ToPacket(), DeliveryMethod.ReliableOrdered);
         }
     }
 }
