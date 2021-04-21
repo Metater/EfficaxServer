@@ -89,6 +89,14 @@ namespace EfficaxServer
 
             var workTimer = new Timer((x) => {
                 Console.WriteLine(ticks);
+                if (ticks > 20)
+                {
+                    timePerTick--;
+                }
+                else if (ticks < 20)
+                {
+                    timePerTick++;
+                }
                 ticks = 0;
             }, null, 0, 1000);
 
