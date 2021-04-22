@@ -6,5 +6,13 @@ namespace EfficaxServer.Simulation
 {
     public class EntityRegistry
     {
+        public ServerInteractor serverInteractor;
+
+        public EntityIdMap entityIdMap = new EntityIdMap();
+
+        public EntityRegistry(ServerInteractor serverInteractor)
+        {
+            this.serverInteractor = serverInteractor;
+        }
     }
 }

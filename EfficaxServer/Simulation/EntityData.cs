@@ -5,7 +5,7 @@ using EfficaxServer.Simulation.Types;
 
 namespace EfficaxServer.Simulation
 {
-    public class EntityData : ITickable
+    public class EntityData
     {
         public int id;
         public Vector2 pos;
@@ -16,11 +16,6 @@ namespace EfficaxServer.Simulation
             this.id = id;
             this.pos = pos;
             this.vel = vel;
-        }
-
-        public void Tick()
-        {
-            pos += vel;
         }
     }
 }

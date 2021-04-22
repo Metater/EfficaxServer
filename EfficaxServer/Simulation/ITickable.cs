@@ -6,6 +6,6 @@ namespace EfficaxServer.Simulation
 {
     public interface ITickable
     {
-        public void Tick();
+        public void Tick(long id);
     }
 }

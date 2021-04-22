@@ -14,23 +14,20 @@ namespace EfficaxServer
     {
         static void Main(string[] args)
         {
+            //Thread.CurrentThread.Priority = ThreadPriority.Highest;
+
             ServerInteractor serverInteractor = new ServerInteractor();
 
-            ServerPacketRouter packetRouter = new ServerPacketRouter(serverInteractor);
-            ServerNetworkInteractor networkInteractor = new ServerNetworkInteractor();
-            PeerPlayerIdMap peerPlayerIdMap = new PeerPlayerIdMap();
-            Dictionary<(int, NetPeer), PositionData> playerPositions = new Dictionary<(int, NetPeer), PositionData>();
-
-
-            networkInteractor.server.Start(25566 /* port */);
+            serverInteractor.networkInteractor.server.Start(25566 /* port */);
 
             Dictionary<NetPeer, string> playerNames = new Dictionary<NetPeer, string>();
 
-            serverInteractor.Load(packetRouter, networkInteractor, peerPlayerIdMap, playerPositions);
-
             Random playerIdMaker = new Random();
 
-            networkInteractor.listener.ConnectionRequestEvent += request =>
+            serverInteractor.efficaxSimulation.entityContainer.entityRegistry.entityIdMap.AddEntity(new Simulation.Entities.PlayerEntity("Gerry boi", new Simulation.EntityData(213123, new Simulation.Types.Vector2(0, 0), new Simulation.Types.Vector2(0, 0))));
+            serverInteractor.efficaxSimulation.entityContainer.Tick(21);
+
+            serverInteractor.networkInteractor.listener.ConnectionRequestEvent += request =>
             {
                 NetPeer peer = request.Accept();
 
@@ -44,7 +41,7 @@ namespace EfficaxServer
                 */
             };
 
-            networkInteractor.listener.PeerConnectedEvent += peer =>
+            serverInteractor.networkInteractor.listener.PeerConnectedEvent += peer =>
             {
                 /*
                 Console.WriteLine("We got connection: {0}", peer.EndPoint); // Show peer ip
@@ -55,7 +52,7 @@ namespace EfficaxServer
                 Console.WriteLine(Convert.ToBase64String(data));
                 peer.Send(writer, DeliveryMethod.ReliableOrdered);             // Send with reliability
                 */
-                foreach (KeyValuePair<(int, NetPeer), PositionData> playerPositionKVP in playerPositions)
+                foreach (KeyValuePair<(int, NetPeer), PositionData> playerPositionKVP in serverInteractor.playerPositions)
                 {
                     PlayerJoinPacket previousPlayer = new PlayerJoinPacket(playerPositionKVP.Key.Item1, playerNames[playerPositionKVP.Key.Item2], playerPositionKVP.Value);
                     peer.Send(previousPlayer.ToPacket(), DeliveryMethod.ReliableOrdered);
@@ -63,15 +60,15 @@ namespace EfficaxServer
 
                 int playerId = playerIdMaker.Next();
                 PositionData playerPos = new PositionData(0, 0);
-                playerPositions.Add((playerId, peer), playerPos);
+                serverInteractor.playerPositions.Add((playerId, peer), playerPos);
                 PlayerJoinPacket playerJoinPacket = new PlayerJoinPacket(playerId, playerNames[peer], playerPos);
-                networkInteractor.BroadcastBut(peer.Id, playerJoinPacket.ToPacket(), DeliveryMethod.ReliableOrdered);
+                serverInteractor.networkInteractor.BroadcastBut(peer.Id, playerJoinPacket.ToPacket(), DeliveryMethod.ReliableOrdered);
             };
 
-            networkInteractor.listener.NetworkReceiveEvent += (fromPeer, dataReader, deliveryMethod) =>
+            serverInteractor.networkInteractor.listener.NetworkReceiveEvent += (fromPeer, dataReader, deliveryMethod) =>
             {
                 //Console.WriteLine("Received, ID: " + fromPeer.Id);
-                packetRouter.Route(fromPeer, dataReader);
+                serverInteractor.packetRouter.Route(fromPeer, dataReader);
                 dataReader.Recycle();
             };
 
@@ -81,53 +78,59 @@ namespace EfficaxServer
 
             var lastTick = new Stopwatch();
             lastTick.Start();
-            long timePerTick = 50;
+            long timePerTick = 500000;
             long timerTicks = 0;
-            long timerTicksReset = 0;
+
+            long maxTimeBetweenTick = -100000000;
+            long minTimeBetweenTick = 100000000;
+
+            List<long> timeBetweenTicks = new List<long>();
+
+            double Average()
+            {
+                long sum = 0;
+                foreach(long l in timeBetweenTicks)
+                {
+                    sum += l;
+                }
+                return sum / ((double)timeBetweenTicks.Count);
+            }
 
             int ticks = 0;
 
             var workTimer = new Timer((x) => {
-                Console.WriteLine(ticks);
-                if (ticks > 20)
-                {
-                    timePerTick--;
-                }
-                else if (ticks < 20)
-                {
-                    timePerTick++;
-                }
+                Console.Title = $"[Efficax Server] Port: 12733 TPS: {ticks / 20f} " + 
+                $"Deviation: (-{(500000 - minTimeBetweenTick) / 10000f}ms, +{(maxTimeBetweenTick - 500000) / 10000f}ms " +
+                $"Average Tick Period: {(Average() / 10000f)}ms";
                 ticks = 0;
-            }, null, 0, 1000);
+            }, null, 0, 20000);
+
+            long nextTickId = 0;
 
             while (!Console.KeyAvailable)
             {
-                networkInteractor.server.PollEvents();
-                timerTicks += lastTick.ElapsedMilliseconds;
+                serverInteractor.networkInteractor.server.PollEvents();
+                lastTick.Stop();
+                timerTicks += lastTick.ElapsedTicks;
+                lastTick.Restart();
                 if (timerTicks >= timePerTick)
                 {
-                    timerTicks = timerTicksReset;
-                    Tick();
-                    lastTick.Restart();
+                    timerTicks -= timePerTick;
+                    Tick(nextTickId);
+                    nextTickId++;
                 }
                 Thread.Sleep(1);
             }
-            networkInteractor.server.Stop();
+            serverInteractor.networkInteractor.server.Stop();
 
-            void TryTick()
+            void Tick(long tickId)
             {
-                lastTick.Stop();
-                if (lastTick.ElapsedTicks > 50)
-                {
-                    lastTick.Restart();
-                    Tick();
-                }
-            }
-
-            void Tick()
-            {
-                //Console.WriteLine("Tick: " + t.ElapsedMilliseconds + ":::" + t.ElapsedTicks);
+                t.Stop();
+                long eTicks = t.ElapsedTicks;
                 t.Restart();
+                if (eTicks > maxTimeBetweenTick) maxTimeBetweenTick = eTicks;
+                if (eTicks < minTimeBetweenTick) minTimeBetweenTick = eTicks;
+                timeBetweenTicks.Add(eTicks);
                 ticks++;
             }
         }

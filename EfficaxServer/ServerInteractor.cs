@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LiteNetLib;
 using EfficaxData;
+using EfficaxServer.Simulation;
 
 namespace EfficaxServer
 {
@@ -12,13 +13,15 @@ namespace EfficaxServer
         public ServerNetworkInteractor networkInteractor;
         public PeerPlayerIdMap peerPlayerIdMap;
         public Dictionary<(int, NetPeer), PositionData> playerPositions;
+        public EfficaxSimulation efficaxSimulation;
 
-        public void Load(ServerPacketRouter packetRouter, ServerNetworkInteractor networkInteractor, PeerPlayerIdMap peerPlayerIdMap, Dictionary<(int, NetPeer), PositionData> playerPositions)
+        public ServerInteractor()
         {
-            this.packetRouter = packetRouter;
-            this.networkInteractor = networkInteractor;
-            this.peerPlayerIdMap = peerPlayerIdMap;
-            this.playerPositions = playerPositions;
+            packetRouter = new ServerPacketRouter(this);
+            networkInteractor = new ServerNetworkInteractor();
+            peerPlayerIdMap = new PeerPlayerIdMap();
+            playerPositions = new Dictionary<(int, NetPeer), PositionData>();
+            efficaxSimulation = new EfficaxSimulation(this);
         }
     }
 }

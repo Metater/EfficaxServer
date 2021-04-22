@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EfficaxServer.Simulation.Entities
 {
-    public class PlayerEntity : Entity, ITickable
+    public class PlayerEntity : Entity
     {
         public string name;
 
@@ -14,9 +14,10 @@ namespace EfficaxServer.Simulation.Entities
             this.data = data;
         }
 
-        public void Tick()
+        public override void Tick(long id)
         {
-            data.Tick();
+            data.pos += data.vel;
+            Console.WriteLine("Ticked player: " + name);
         }
     }
 }

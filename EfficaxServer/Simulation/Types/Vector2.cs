@@ -19,5 +19,9 @@ namespace EfficaxServer.Simulation.Types
         {
             return new Vector2(a.x + b.x, a.y + b.y);
         }
+        public static Vector2 operator /(Vector2 a, float b)
+        {
+            return new Vector2(a.x / b, a.y / b);
+        }
     }
 }
