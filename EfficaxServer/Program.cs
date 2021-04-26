@@ -14,7 +14,7 @@ namespace EfficaxServer
     {
         static void Main(string[] args)
         {
-            //Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
 
             ServerInteractor serverInteractor = new ServerInteractor();
 
@@ -72,40 +72,14 @@ namespace EfficaxServer
                 dataReader.Recycle();
             };
 
-
-            var t = new Stopwatch();
-            t.Start();
-
             var lastTick = new Stopwatch();
             lastTick.Start();
-            long timePerTick = 500000;
+            long timePerTick = 400000; // 25 TPS
             long timerTicks = 0;
 
-            long maxTimeBetweenTick = -100000000;
-            long minTimeBetweenTick = 100000000;
-
-            List<long> timeBetweenTicks = new List<long>();
-
-            double Average()
-            {
-                long sum = 0;
-                foreach(long l in timeBetweenTicks)
-                {
-                    sum += l;
-                }
-                return sum / ((double)timeBetweenTicks.Count);
-            }
-
-            int ticks = 0;
-
-            var workTimer = new Timer((x) => {
-                Console.Title = $"[Efficax Server] Port: 12733 TPS: {ticks / 20f} " + 
-                $"Deviation: (-{(500000 - minTimeBetweenTick) / 10000f}ms, +{(maxTimeBetweenTick - 500000) / 10000f}ms " +
-                $"Average Tick Period: {(Average() / 10000f)}ms";
-                ticks = 0;
-            }, null, 0, 20000);
-
             long nextTickId = 0;
+
+            Console.Title = $"[Efficax Server] Port: 12733";
 
             while (!Console.KeyAvailable)
             {
@@ -125,13 +99,7 @@ namespace EfficaxServer
 
             void Tick(long tickId)
             {
-                t.Stop();
-                long eTicks = t.ElapsedTicks;
-                t.Restart();
-                if (eTicks > maxTimeBetweenTick) maxTimeBetweenTick = eTicks;
-                if (eTicks < minTimeBetweenTick) minTimeBetweenTick = eTicks;
-                timeBetweenTicks.Add(eTicks);
-                ticks++;
+
             }
         }
     }
