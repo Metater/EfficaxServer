@@ -4,3 +4,4 @@ ChatReceivePacket = 81 ClientB
 PlayerJoinPacket = 40 ClientB
 PlayerUpdatePacket = 41 ClientB
 PlayerSelfUpdatePacket = 50 ServerB
+PlayerInputPacket = 30 ServerB
