@@ -5,9 +5,9 @@ using LiteNetLib;
 using EfficaxData;
 using EfficaxData.Packets.Chat;
 
-namespace EfficaxServer.PacketHandlers.Chat
+namespace EfficaxServer.Network.PacketHandlers.Chat
 {
-    public class ChatSendPacketHandler : PacketHandler
+    public class ChatSendPacketHandler : BasePacketHandler
     {
         public override void Handle(NetPeer peer, DataReader dataReader)
         {

@@ -9,10 +9,10 @@ using EfficaxData;
 using EfficaxData.Packets.Chat;
 using EfficaxData.Packets.Player;
 
-using EfficaxServer.PacketHandlers.Chat;
-using EfficaxServer.PacketHandlers.Player;
+using EfficaxServer.Network.PacketHandlers.Player;
+using EfficaxServer.Network.PacketHandlers.Chat;
 
-namespace EfficaxServer
+namespace EfficaxServer.Network
 {
     public class ServerPacketRouter
     {

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using LiteNetLib;
 using EfficaxData.Packets;
+using EfficaxServer.Network.PacketHandlers;
 
-namespace EfficaxServer
+namespace EfficaxServer.Network
 {
-    public class PlayerPacketHandler : PacketHandler
+    public class PlayerPacketHandler : BasePacketHandler
     {
         public override void Handle(NetPeer peer, DataReader dataReader)
         {

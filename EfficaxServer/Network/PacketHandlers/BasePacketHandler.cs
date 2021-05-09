@@ -5,9 +5,9 @@ using LiteNetLib;
 using EfficaxData.Packets;
 using EfficaxData;
 
-namespace EfficaxServer
+namespace EfficaxServer.Network.PacketHandlers
 {
-    public abstract class PacketHandler
+    public abstract class BasePacketHandler
     {
         protected ServerInteractor serverInteractor;
 

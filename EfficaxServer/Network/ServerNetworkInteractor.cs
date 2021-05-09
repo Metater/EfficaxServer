@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LiteNetLib;
 
-namespace EfficaxServer
+namespace EfficaxServer.Network
 {
     public class ServerNetworkInteractor
     {

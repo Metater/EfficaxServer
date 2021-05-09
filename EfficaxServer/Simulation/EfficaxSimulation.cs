@@ -1,4 +1,6 @@
-﻿using System;
+﻿using EfficaxServer.Simulation.Entity;
+using EfficaxServer.Simulation.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

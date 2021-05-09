@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EfficaxServer.Simulation
+namespace EfficaxServer.Simulation.Entity
 {
     public class EntityRegistry
     {

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EfficaxServer.Simulation.Entity;
 
-namespace EfficaxServer.Simulation.Entities
+namespace EfficaxServer.Simulation.Entity.Entities
 {
-    public class PlayerEntity : Entity
+    public class PlayerEntity : BaseEntity
     {
         public string name;
 

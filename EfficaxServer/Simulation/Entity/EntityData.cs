@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using EfficaxServer.Simulation.Types;
 
-namespace EfficaxServer.Simulation
+namespace EfficaxServer.Simulation.Entity
 {
     public class EntityData
     {

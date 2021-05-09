@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EfficaxServer.Simulation.Entity.Entities;
+using EfficaxServer.Simulation.Interfaces;
 
-namespace EfficaxServer.Simulation
+namespace EfficaxServer.Simulation.Entity
 {
     public class EntityContainer : ITickable
     {
@@ -23,7 +25,7 @@ namespace EfficaxServer.Simulation
 
         private void TickAllEntities(long id)
         {
-            foreach(Entity entity in entityRegistry.entityIdMap.GetAllEntities())
+            foreach(BaseEntity entity in entityRegistry.entityIdMap.GetAllEntities())
             {
                 entity.Tick(id);
             }

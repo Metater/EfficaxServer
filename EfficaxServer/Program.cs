@@ -7,11 +7,14 @@ using EfficaxData;
 using EfficaxData.Packets;
 using EfficaxData.Packets.Player;
 using System.Diagnostics;
+using EfficaxServer.Simulation.Entity.Entities;
 
 namespace EfficaxServer
 {
     class Program
     {
+        public const long TimePerTick = 400000;
+
         static void Main(string[] args)
         {
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
@@ -24,7 +27,7 @@ namespace EfficaxServer
 
             Random playerIdMaker = new Random();
 
-            serverInteractor.efficaxSimulation.entityContainer.entityRegistry.entityIdMap.AddEntity(new Simulation.Entities.PlayerEntity("Gerry boi", new Simulation.EntityData(213123, new Simulation.Types.Vector2(0, 0), new Simulation.Types.Vector2(0, 0))));
+            serverInteractor.efficaxSimulation.entityContainer.entityRegistry.entityIdMap.AddEntity(new PlayerEntity("Gerry boi", new Simulation.Entity.EntityData(213123, new Simulation.Types.Vector2(0, 0), new Simulation.Types.Vector2(0, 0))));
             serverInteractor.efficaxSimulation.entityContainer.Tick(21);
 
             serverInteractor.networkInteractor.listener.ConnectionRequestEvent += request =>
@@ -32,26 +35,10 @@ namespace EfficaxServer
                 NetPeer peer = request.Accept();
 
                 playerNames.Add(peer, request.Data.GetString());
-
-                /*
-                if (server.ConnectedPeersCount < 10)
-                    request.AcceptIfKey("SomeConnectionKey");
-                else
-                    request.Reject();
-                */
             };
 
             serverInteractor.networkInteractor.listener.PeerConnectedEvent += peer =>
             {
-                /*
-                Console.WriteLine("We got connection: {0}", peer.EndPoint); // Show peer ip
-                NetDataWriter writer = new NetDataWriter();                 // Create writer class
-                EfficaxPlayer efficaxPlayer = new EfficaxPlayer(new PositionData(32, 0), $"Jimmy {networkInteractor.server.GetPeersCount(ConnectionState.Any)}");
-                byte[] data = efficaxPlayer.ToPacket();
-                writer.Put(data);
-                Console.WriteLine(Convert.ToBase64String(data));
-                peer.Send(writer, DeliveryMethod.ReliableOrdered);             // Send with reliability
-                */
                 foreach (KeyValuePair<(int, NetPeer), PositionData> playerPositionKVP in serverInteractor.playerPositions)
                 {
                     PlayerJoinPacket previousPlayer = new PlayerJoinPacket(playerPositionKVP.Key.Item1, playerNames[playerPositionKVP.Key.Item2], playerPositionKVP.Value);
@@ -67,19 +54,18 @@ namespace EfficaxServer
 
             serverInteractor.networkInteractor.listener.NetworkReceiveEvent += (fromPeer, dataReader, deliveryMethod) =>
             {
-                //Console.WriteLine("Received, ID: " + fromPeer.Id);
                 serverInteractor.packetRouter.Route(fromPeer, dataReader);
                 dataReader.Recycle();
             };
 
             var lastTick = new Stopwatch();
             lastTick.Start();
-            long timePerTick = 400000; // 25 TPS
             long timerTicks = 0;
 
             long nextTickId = 0;
 
-            Console.Title = $"[Efficax Server] Port: 12733";
+            //Console.Title = $"[Efficax Server] Port: 12733";
+            Console.Title = $"[Efficax Server] Port: 25566";
 
             while (!Console.KeyAvailable)
             {
@@ -87,9 +73,9 @@ namespace EfficaxServer
                 lastTick.Stop();
                 timerTicks += lastTick.ElapsedTicks;
                 lastTick.Restart();
-                if (timerTicks >= timePerTick)
+                if (timerTicks >= TimePerTick)
                 {
-                    timerTicks -= timePerTick;
+                    timerTicks -= TimePerTick;
                     Tick(nextTickId);
                     nextTickId++;
                 }

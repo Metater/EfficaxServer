@@ -4,6 +4,7 @@ using System.Text;
 using LiteNetLib;
 using EfficaxData;
 using EfficaxServer.Simulation;
+using EfficaxServer.Network;
 
 namespace EfficaxServer
 {

@@ -23,13 +23,16 @@ namespace EfficaxData.Packets.Player
         public PlayerInputs playerInputs = 0;
         public void FromPacket(DataReader dataReader)
         {
-            throw new NotImplementedException();
-            playerInputs |= PlayerInputs.A0;
+            byte data = dataReader.GetByte();
+            playerInputs = (PlayerInputs)data;
         }
 
         public byte[] ToPacket()
         {
-            throw new NotImplementedException();
+            DataWriter dataWriter = new DataWriter();
+            dataWriter.Put(PacketId);
+            dataWriter.Put((byte)playerInputs);
+            return dataWriter.CopyData();
         }
     }
 }

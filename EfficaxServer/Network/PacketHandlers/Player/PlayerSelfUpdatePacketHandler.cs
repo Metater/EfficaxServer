@@ -6,9 +6,9 @@ using System.Text;
 using EfficaxData.Packets.Player;
 using EfficaxData.Data;
 
-namespace EfficaxServer.PacketHandlers.Player
+namespace EfficaxServer.Network.PacketHandlers.Player
 {
-    public class PlayerSelfUpdatePacketHandler : PacketHandler
+    public class PlayerSelfUpdatePacketHandler : BasePacketHandler
     {
         public override void Handle(NetPeer peer, DataReader dataReader)
         {
