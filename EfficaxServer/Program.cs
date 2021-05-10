@@ -27,7 +27,7 @@ namespace EfficaxServer
 
             Random playerIdMaker = new Random();
 
-            serverInteractor.efficaxSimulation.entityContainer.entityRegistry.entityIdMap.AddEntity(new PlayerEntity("Gerry boi", new Simulation.Entity.EntityData(213123, new Simulation.Types.Vector2(0, 0), new Simulation.Types.Vector2(0, 0))));
+            serverInteractor.efficaxSimulation.entityContainer.entityRegistry.entityIdMap.AddEntity(new PlayerEntity(null, 1, "Gerry boi", new Simulation.Entity.EntityData(213123, new Simulation.Types.Vector2(0, 0), new Simulation.Types.Vector2(0, 0))));
             serverInteractor.efficaxSimulation.entityContainer.Tick(21);
 
             serverInteractor.networkInteractor.listener.ConnectionRequestEvent += request =>

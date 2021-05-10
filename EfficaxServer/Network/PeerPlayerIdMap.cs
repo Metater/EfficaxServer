@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using LiteNetLib;
 
-namespace EfficaxServer
+namespace EfficaxServer.Network
 {
     public class PeerPlayerIdMap
     {
