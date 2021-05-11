@@ -25,5 +25,10 @@ namespace EfficaxServer.Simulation.Entity.Entities
             data.pos += data.vel;
             Console.WriteLine("Ticked player: " + name);
         }
+
+        private void Move()
+        {
+
+        }
     }
 }
